@@ -1,9 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import { User } from "../entity/User";
 import { AppDataSource } from "../data-source";
-import bodyParser = require("body-parser");
 import * as crypto from "crypto-js";
 import { validationResult } from "express-validator";
+import * as jwt from 'jsonwebtoken'
+require("dotenv").config();
 
 class UserController {
   async getUsers(request: Request, response: Response, next: NextFunction) {
@@ -12,24 +13,54 @@ class UserController {
   }
 
   async getUser(request: Request, response: Response, next: NextFunction) {
-    const { id } = request.params;
+    const { id } = request.params
     const user = await AppDataSource.manager.findOneBy(User, {
-      id: Number(id),
+      id: Number(id)
     });
     return response.json(user);
   }
 
+
+  
   async authLogin(request: Request, response: Response, next: NextFunction) {
+    if (!validationResult(request).isEmpty()) {
+      return response.status(404).json({ message: "Invalid data!" });
+    }
+
     const auth = await AppDataSource.manager.findOneBy(User, {
-      email: request.body,
+      email: request.body["email"],
+      password: crypto.HmacSHA1(request.body["password"], "password").toString()
     });
 
     if (auth == null) {
       return response.status(404).json({ message: "Login error!" });
     }
 
-    return response.json(auth);
+    const token = jwt.sign({ id: auth.id }, process.env.SECRET,{
+      expiresIn: 100
+    })
+
+    return response.json({ auth: true, token: token})
   }
+
+  async logout(request: Request, response: Response, next: NextFunction){
+    return response.json({ auth: false, token: null})
+  }
+
+  async verifyJWT(request: Request, response: Response, next: NextFunction){
+    const token = request.header("x-access-token")
+    if(!token) return response.status(401).json({ auth: false, message: "No token provided!"})
+
+    jwt.verify(token, process.env.SECRET, (err, decoded: any) => {
+      if(err) return response.status(500).json({ auth: false, message: "Failed to authenticate token!"})
+
+      request.params.id = decoded.id
+      next()
+    })
+  }
+
+
+
 
   async saveUser(request: Request, response: Response, next: NextFunction) {
     if (!validationResult(request).isEmpty()) {
@@ -76,18 +107,6 @@ class UserController {
     }
 
     return response.status(404).json({ message: "User not found!" });
-  }
-
-  async findbyField(field: string, type: "email" | "id") {
-    if (type == "email") {
-      return await AppDataSource.manager.findOneBy(User, {
-        email: field,
-      });
-    }
-
-    return await AppDataSource.manager.findOneBy(User, {
-      id: Number(field),
-    });
   }
 }
 
