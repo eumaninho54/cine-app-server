@@ -1,5 +1,6 @@
 import { Request, Response, Router } from 'express'
 import userController from './controller/UserController'
+import { check } from 'express-validator'
 
 const routes = Router()
 
@@ -8,7 +9,11 @@ routes.get('/users', userController.getUsers)
 routes.get('/users/:id', userController.getUser)
 
 //POST
-routes.post('/users', userController.saveUser)
+routes.post('/users', [
+    check("email").not().isEmpty().isEmail(),
+    check("password").not().isEmpty().isLength({min: 8})
+] ,userController.saveUser)
+
 routes.get('/login', userController.authLogin)
 
 //PUT

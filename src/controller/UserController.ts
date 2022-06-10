@@ -3,14 +3,9 @@ import { User } from "../entity/User";
 import { AppDataSource } from "../data-source";
 import bodyParser = require("body-parser");
 import * as crypto from "crypto-js";
-
-interface loginProp {
-  email: string
-  password: string
-}
+import { validationResult } from "express-validator";
 
 class UserController {
-
   async getUsers(request: Request, response: Response, next: NextFunction) {
     const users = await AppDataSource.manager.find(User);
     return response.json(users);
@@ -23,24 +18,34 @@ class UserController {
     });
     return response.json(user);
   }
-  
-  async authLogin(request: Request, response: Response, next: NextFunction) {
-    const auth = await AppDataSource.manager.findOneBy(User, request.body)
 
-    if(auth == null){
+  async authLogin(request: Request, response: Response, next: NextFunction) {
+    const auth = await AppDataSource.manager.findOneBy(User, {
+      email: request.body,
+    });
+
+    if (auth == null) {
       return response.status(404).json({ message: "Login error!" });
     }
 
     return response.json(auth);
   }
 
-
   async saveUser(request: Request, response: Response, next: NextFunction) {
-    let bodyData:loginProp = request.body
-    bodyData['password'] = crypto.HmacSHA1(bodyData.password, "password").toString()
-    const users = await AppDataSource.manager.save(User, request.body);
-    console.log(bodyData)
-    //return response.json(users);
+    if (!validationResult(request).isEmpty()) {
+      return response.status(404).json({ message: "Invalid data!" });
+    }
+
+    if (await AppDataSource.manager.findOneBy(User, {email: request.body["email"],}) != null){
+      return response.status(404).json({ message: "E-mail already registered!" });
+    }
+
+    request.body["password"] = crypto
+      .HmacSHA1(request.body["password"], "password")
+      .toString();
+    const user = await AppDataSource.manager.save(User, request.body);
+
+    return response.json(user);
   }
 
   async updateUser(request: Request, response: Response, next: NextFunction) {
@@ -57,10 +62,10 @@ class UserController {
     return response.status(404).json({ message: "User not found!" });
   }
 
-  async removeUser(request: Request, response: Response, next: NextFunction){
+  async removeUser(request: Request, response: Response, next: NextFunction) {
     const { id } = request.params;
     const user = await AppDataSource.manager.delete(User, {
-      id: Number(id)
+      id: Number(id),
     });
 
     if (user.affected == 1) {
@@ -73,8 +78,18 @@ class UserController {
     return response.status(404).json({ message: "User not found!" });
   }
 
-}
+  async findbyField(field: string, type: "email" | "id") {
+    if (type == "email") {
+      return await AppDataSource.manager.findOneBy(User, {
+        email: field,
+      });
+    }
 
+    return await AppDataSource.manager.findOneBy(User, {
+      id: Number(field),
+    });
+  }
+}
 
 const userController = new UserController();
 export default userController;
