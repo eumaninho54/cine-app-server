@@ -19,8 +19,6 @@ class UserController {
     });
     return response.json(user);
   }
-
-
   
   async authLogin(request: Request, response: Response, next: NextFunction) {
     if (!validationResult(request).isEmpty()) {
@@ -28,7 +26,7 @@ class UserController {
     }
 
     const auth = await AppDataSource.manager.findOneBy(User, {
-      email: request.body["email"],
+      email: request.body["email"].toLowerCase() ,
       password: crypto.HmacSHA1(request.body["password"], "password").toString()
     });
 
@@ -74,8 +72,9 @@ class UserController {
     request.body["password"] = crypto
       .HmacSHA1(request.body["password"], "password")
       .toString();
-    const user = await AppDataSource.manager.save(User, request.body);
+    request.body["email"] = request.body["email"].toLowerCase()
 
+    const user = await AppDataSource.manager.save(User, request.body);
     return response.json(user);
   }
 
