@@ -17,7 +17,11 @@ class UserController {
     const user = await AppDataSource.manager.findOneBy(User, {
       id: Number(id)
     });
-    return response.json(user);
+
+    return response.json({
+      username: user.username,
+      email: user.email
+    });
   }
   
   async authLogin(request: Request, response: Response, next: NextFunction) {
@@ -35,10 +39,18 @@ class UserController {
     }
 
     const token = jwt.sign({ id: auth.id }, process.env.SECRET,{
-      expiresIn: 100
+      expiresIn: 1500
     })
 
-    return response.json({ auth: true, token: token})
+    return response.json({ 
+      authentication: {
+        auth: true, token: token
+      },
+      infoUser: {
+        username: auth.username,
+        email: auth.email
+      }
+    })
   }
 
   async logout(request: Request, response: Response, next: NextFunction){
@@ -56,9 +68,6 @@ class UserController {
       next()
     })
   }
-
-
-
 
   async saveUser(request: Request, response: Response, next: NextFunction) {
     if (!validationResult(request).isEmpty()) {
