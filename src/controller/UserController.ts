@@ -30,7 +30,7 @@ class UserController {
     }
 
     const auth = await AppDataSource.manager.findOneBy(User, {
-      email: request.body["email"].toLowerCase() ,
+      email: request.body["email"].toLowerCase(),
       password: crypto.HmacSHA1(request.body["password"], "password").toString()
     });
 
