@@ -1,6 +1,5 @@
-import { Request, Response, Router } from 'express'
+import { Router } from 'express'
 import userController from './controller/UserController'
-import ticketsController from './controller/TicketsController'
 import { check } from 'express-validator'
 
 const routes = Router()
