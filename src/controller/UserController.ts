@@ -8,7 +8,8 @@ require("dotenv").config();
 
 class UserController {
   async getUsers(request: Request, response: Response, next: NextFunction) {
-    const users = await AppDataSource.manager.find(User);
+    const appDataSource = AppDataSource.getRepository(User)
+    const users = await appDataSource.find()
 
     return response.json(users);
   }

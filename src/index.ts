@@ -1,16 +1,10 @@
 import * as express from "express";
 import * as bodyParser from "body-parser";
-import { AppDataSource } from "./data-source";
 import routes from "./routes";
 import * as cors from "cors"
+import { AppDataSource } from "./data-source";
 
 const app = express();
-
-app.use(bodyParser.json());
-app.use(routes);
-app.use(cors())
-
-app.listen(process.env.PORT || 3333);
 
 AppDataSource.initialize()
   .then(() => {
@@ -19,3 +13,10 @@ AppDataSource.initialize()
   .catch((error) => {
     console.log(error);
   });
+
+
+app.use(bodyParser.json());
+app.use(routes);
+app.use(cors())
+
+app.listen(process.env.PORT || 3333);
