@@ -6,6 +6,7 @@ import { check } from 'express-validator'
 const routes = Router()
 
 //GET
+routes.get('/', userController.welcome)
 routes.get('/users', userController.getUsers)
 routes.get('/user', userController.verifyJWT,userController.getUser)
 //routes.get('/tickets/:id', ticketsController.getTickets)

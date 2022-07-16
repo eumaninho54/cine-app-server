@@ -12,6 +12,12 @@ class UserController {
     return response.json(users);
   }
 
+  async welcome(request: Request, response: Response, next: NextFunction) {
+    return response.json({
+      message: "Welcome!!"
+    })
+  }
+
   async getUser(request: Request, response: Response, next: NextFunction) {
     const { id } = request.params
     const user = await AppDataSource.manager.findOneBy(User, {

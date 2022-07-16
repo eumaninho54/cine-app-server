@@ -2,7 +2,6 @@ import * as express from "express";
 import * as bodyParser from "body-parser";
 import { AppDataSource } from "./data-source";
 import routes from "./routes";
-import * as crypto from "crypto-js";
 import * as cors from "cors"
 
 const app = express();
