@@ -1,4 +1,4 @@
-//import { Tickets } from './Tickets';
+import { Tickets } from './Tickets';
 import { Entity, PrimaryGeneratedColumn, Column, Index, OneToMany } from "typeorm";
 
 @Entity()
@@ -7,8 +7,8 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  /*@OneToMany(() => Tickets, (tickets: Tickets) => tickets.id_user)
-  tickets: Tickets[]*/
+  @OneToMany(() => Tickets, (tickets: Tickets) => tickets.id_user)
+  tickets: Tickets[]
 
   @Column()
   username: string;

@@ -8,9 +8,17 @@ export const AppDataSource = new DataSource({
   type: "postgres",
   url: process.env.DATABASE_URL,
   synchronize: true,
-  logging: true,
+  logging: false,
   entities: [__dirname + "/entity/*.{js,ts}"],
   migrations: [],
   subscribers: [],
-  ssl: process.env.NOTSSL ? false : true
 });
+
+AppDataSource.initialize()
+  .then(() => {
+    console.log("FOI!");
+  })
+  .catch((error) => {
+    console.log(error);
+  });
+
