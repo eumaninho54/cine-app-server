@@ -9,7 +9,7 @@ export const AppDataSource = new DataSource({
   url: process.env.DATABASE_URL,
   synchronize: true,
   logging: false,
-  entities: ["dist/**/*.entity{.js,.ts}"],
+  entities: ["dist/entity/*.*", "src/entity/*.*"],
   migrations: [],
   subscribers: [],
 });
