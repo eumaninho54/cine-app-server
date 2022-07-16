@@ -38,9 +38,7 @@ class UserController {
       return response.status(404).json({ message: "Login error!" });
     }
 
-    const token = jwt.sign({ id: auth.id }, process.env.SECRET,{
-      expiresIn: 1500
-    })
+    const token = jwt.sign({ id: auth.id }, process.env.SECRET,{})
 
     return response.json({ 
       authentication: {

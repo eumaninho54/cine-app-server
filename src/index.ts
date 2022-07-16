@@ -3,11 +3,13 @@ import * as bodyParser from "body-parser";
 import { AppDataSource } from "./data-source";
 import routes from "./routes";
 import * as crypto from "crypto-js";
+import * as cors from "cors"
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(routes);
+app.use(cors())
 
 app.listen(3333);
 
