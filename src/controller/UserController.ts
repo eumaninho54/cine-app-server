@@ -9,6 +9,7 @@ require("dotenv").config();
 class UserController {
   async getUsers(request: Request, response: Response, next: NextFunction) {
     const users = await AppDataSource.manager.find(User);
+
     return response.json(users);
   }
 
@@ -20,9 +21,10 @@ class UserController {
 
   async getUser(request: Request, response: Response, next: NextFunction) {
     const { id } = request.params
+
     const user = await AppDataSource.manager.findOneBy(User, {
       id: Number(id)
-    });
+    })
 
     return response.json({
       username: user.username,
