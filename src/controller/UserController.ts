@@ -14,12 +14,7 @@ class UserController {
     return response.json(users);
   }
 
-  async welcome(request: Request, response: Response, next: NextFunction) {
-    return response.json({
-      message: "Welcome!!"
-    })
-  }
-
+  
   async getUser(request: Request, response: Response, next: NextFunction) {
     const { id } = request.params
 
@@ -28,10 +23,13 @@ class UserController {
     })
 
     return response.json({
+      id: user.id,
       username: user.username,
-      email: user.email
+      email: user.email,
+      favorites: user.favorites
     });
   }
+
   
   async authLogin(request: Request, response: Response, next: NextFunction) {
     if (!validationResult(request).isEmpty()) {
@@ -54,15 +52,19 @@ class UserController {
         auth: true, token: token
       },
       infoUser: {
+        id: auth.id,
         username: auth.username,
-        email: auth.email
+        email: auth.email,
+        favorites: auth.favorites
       }
     })
   }
 
+
   async logout(request: Request, response: Response, next: NextFunction){
     return response.json({ auth: false, token: null})
   }
+
 
   async verifyJWT(request: Request, response: Response, next: NextFunction){
     const token = request.header("x-access-token")
@@ -75,6 +77,7 @@ class UserController {
       next()
     })
   }
+
 
   async saveUser(request: Request, response: Response, next: NextFunction) {
     if (!validationResult(request).isEmpty()) {
@@ -90,9 +93,14 @@ class UserController {
       .toString();
     request.body["email"] = request.body["email"].toLowerCase()
 
-    const user = await AppDataSource.manager.save(User, request.body);
+    const user = await AppDataSource.manager.save(User, {
+      ...request.body,
+      tickets: [],
+      favorites: []
+    });
     return response.json(user);
   }
+
 
   async updateUser(request: Request, response: Response, next: NextFunction) {
     const { id } = request.params;
