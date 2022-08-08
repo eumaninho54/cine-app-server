@@ -11,16 +11,16 @@ export class Favorites {
   user: User
 
   @PrimaryColumn()
-  id: number;
+  id: number
   
   @Column({type: "float"})
-  vote_average: number;
+  vote_average: number
 
   @Column()
   overview: string;
 
   @Column()
-  release_date: string;
+  release_date: string
 
   @Column()
   backdrop_path: string

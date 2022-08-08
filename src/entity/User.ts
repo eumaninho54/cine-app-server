@@ -17,7 +17,7 @@ export class User {
   @Column()
   password: string;
 
-  @OneToMany(() => Tickets, (tickets: Tickets) => tickets.id_user, { eager: true })
+  @OneToMany(() => Tickets, (tickets: Tickets) => tickets.user, { eager: true })
   tickets: Tickets[]
 
   @OneToMany(() => Favorites, (Favorites: Favorites) => Favorites.user, { eager: true })
