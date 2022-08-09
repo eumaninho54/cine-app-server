@@ -13,9 +13,11 @@ export class Tickets {
   title: string;
 
   @Column()
-  session_date: Date;
+  banner: string;
 
   @Column()
-  poster_path: string;
+  session_date: string;
 
+  @Column()
+  hoursSession: string;
 }

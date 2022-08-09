@@ -9,6 +9,7 @@ const routes = Router()
 routes.get('/users', userController.getUsers)
 routes.get('/user/', userController.verifyJWT,userController.getUser)
 routes.get('/user/favorite', userController.verifyJWT, ticketsController.getFavorites)
+routes.get('/user/ticket', userController.verifyJWT, ticketsController.getTickets)
 
 //POST
 routes.post('/user/new', [
@@ -24,9 +25,9 @@ routes.post('/login', [
     check("password").not().isEmpty().isLength({min: 8})
 ], userController.authLogin)
 
-routes.post('/user/tickets/buy', ticketsController.buyTicket)
-
 routes.post('/logout', userController.logout)
+
+routes.post('/user/ticket/buy', userController.verifyJWT, ticketsController.buyTicket)
 
 //PUT
 routes.put('/user/', userController.verifyJWT, userController.updateUser)

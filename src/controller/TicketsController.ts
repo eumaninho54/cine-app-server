@@ -64,9 +64,26 @@ class TicketsController {
     return response.json({favorites: favorites});
   }
 
+  async getTickets(request: Request, response: Response, next: NextFunction){
+    const { id } = request.params
+
+    const user = await AppDataSource.manager.findOneBy(User, {
+      id: Number(id)
+    })
+
+    if(user == null){
+      return response.status(404).json({ message: "User not found!" })
+    }
+
+    return response.json(user.tickets)
+  }
 
   async buyTicket(request: Request, response: Response, next: NextFunction){
-    
+    request.body.forEach(async (dataMovie) => {
+      await AppDataSource.manager.save(Tickets, dataMovie);
+    });
+
+    return response.json({message: "Movies purchased!"});
   }
 }
 
