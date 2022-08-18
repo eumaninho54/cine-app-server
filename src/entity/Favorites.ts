@@ -3,10 +3,6 @@ import { User } from './User';
 
 @Entity()
 export class Favorites {
-  push(dataMovie: any) {
-    throw new Error("Method not implemented.");
-  }
-
   @ManyToOne(() => User, (user: User) => user.favorites, { onDelete: 'CASCADE'})
   user: User
 

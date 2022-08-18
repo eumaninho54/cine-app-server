@@ -22,6 +22,10 @@ class UserController {
       id: Number(id)
     })
 
+    if (user == null) {
+      return response.status(404).json({ message: "User not found!" });
+    }
+
     return response.json({
       id: user.id,
       username: user.username,

@@ -1,4 +1,3 @@
-import axios from "axios";
 import { NextFunction, Request, Response } from "express";
 import { AppDataSource } from "../data-source";
 import { Favorites } from "../entity/Favorites";
@@ -21,17 +20,17 @@ class TicketsController {
     return response.json(user.favorites)
   }
 
-  async saveFavorite(request: Request, response: Response, next: NextFunction){
-    const user = await AppDataSource.manager.save(Favorites, request.body);
-    return response.json(user);
-  }
-
   async updateFavorite(request: Request, response: Response, next: NextFunction){
     const { id } = request.params
     const { isSelected, dataMovie } = request.body
     const user = await AppDataSource.manager.findOneBy(User, {
       id: Number(id)
     })
+
+    if (dataMovie == null){
+      return response.status(404).json({ message: "Data movie is empty!" });
+    }
+
     const haveFavorite = user.favorites.find((value) => value.id == dataMovie.id)
 
     if(isSelected){
@@ -79,13 +78,42 @@ class TicketsController {
   }
 
   async buyTicket(request: Request, response: Response, next: NextFunction){
+    const { id } = request.params
+
+    const user = await AppDataSource.manager.findOneBy(User, {
+      id: Number(id)
+    })
+
+    if(user == null){
+      return response.status(404).json({ message: "User not found!" })
+    }
+
     request.body.forEach(async (dataMovie) => {
-      await AppDataSource.manager.save(Tickets, dataMovie);
+      if(new Date(dataMovie.session_date) < new Date()){
+        return
+      }
+
+      await AppDataSource.manager.save(Tickets, {user: {
+        id: Number(id)
+      }, ...dataMovie});
     });
 
-    return response.json({message: "Movies purchased!"});
+    return response.json(user)
+  }
+
+  async removeTicket(request: Request, response: Response, next: NextFunction){
+    AppDataSource.manager.delete(Tickets, {})
+
+    return response.json({message: "foi"})
+  }
+
+  async todos(request: Request, response: Response, next: NextFunction){
+    const test = AppDataSource.getRepository(Tickets)
+    const tickets = await test.find()
+
+    return response.json(tickets)
   }
 }
 
 const ticketsController = new TicketsController();
-export default ticketsController;
+export default ticketsController
