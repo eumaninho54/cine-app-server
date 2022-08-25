@@ -60,7 +60,7 @@ class TicketsController {
         }
       }
     })
-    return response.json({favorites: favorites});
+    return response.json(favorites);
   }
 
   async getTickets(request: Request, response: Response, next: NextFunction){
