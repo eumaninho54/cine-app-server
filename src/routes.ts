@@ -30,7 +30,7 @@ routes.post('/logout', userController.logout)
 routes.post('/user/ticket/buy', userController.verifyJWT, ticketsController.buyTicket)
 
 //PUT
-routes.put('/user/', userController.verifyJWT, userController.updateUser);
+routes.put('/user/change', userController.verifyJWT, userController.updateUser);
 
 //PATCH
 routes.patch('/user/favorite/change/', userController.verifyJWT, ticketsController.updateFavorite)
@@ -38,6 +38,5 @@ routes.patch('/user/favorite/change/', userController.verifyJWT, ticketsControll
 //DELETE
 routes.delete('/user/:id', userController.removeUser)
 routes.delete('/user/ticket/:id', ticketsController.removeTicket)
-
 
 export default routes

@@ -115,14 +115,24 @@ class UserController {
   }
 
   async updateUser(request: Request, response: Response, next: NextFunction) {
-    const { id } = request.params;
-    const user = await AppDataSource.manager.update(User, id, request.body);
+    const { id, token } = request.params;
+    const { username } = request.body
+    const user = await AppDataSource.manager.update(User, id, {
+      username: username
+    });
 
     if (user.affected == 1) {
       const userUpdated = await AppDataSource.manager.findOneBy(User, {
         id: Number(id),
       });
-      return response.json(userUpdated);
+      return response.json({
+        id: userUpdated.id,
+        userUpdatedname: userUpdated.username,
+        email: userUpdated.email,
+        favorites: userUpdated.favorites,
+        token: token,
+        auth: true,
+      });
     }
 
     return response.status(404).json({ message: "User not found!" });
